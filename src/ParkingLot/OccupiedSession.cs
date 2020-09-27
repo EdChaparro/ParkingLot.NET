@@ -8,7 +8,7 @@ namespace IntrepidProducts.ParkingLot
     {
         public IList<IOccupiedEvent> Events { get; } = new List<IOccupiedEvent>();
 
-        public IVehicle Vehicle { get; private set; }
+        public IVehicle? Vehicle { get; private set; }
 
         #region Add Events
         public bool Add(EnteredEvent oEvent, IVehicle vehicle)
