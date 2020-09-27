@@ -8,6 +8,8 @@
     <AssemblyName>IntrepidProducts.ParkingLot.Tests</AssemblyName>
 
     <RootNamespace>IntrepidProducts.ParkingLot.Tests</RootNamespace>
+
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
