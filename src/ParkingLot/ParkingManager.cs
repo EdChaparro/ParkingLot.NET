@@ -13,7 +13,7 @@ namespace IntrepidProducts.ParkingLot
 
         bool IsFull { get; }
 
-        ParkingSpot AvailableSpot();
+        ParkingSpot? AvailableSpot();
 
         bool IsAvailable(ParkingSpot spot);
 
@@ -23,7 +23,7 @@ namespace IntrepidProducts.ParkingLot
         bool Park(IVehicle vehicle, ParkingSpot spot = null);
         bool Move(IVehicle vehicle, ParkingSpot spot = null);
 
-        ParkingSpot FindParkingSpot(IVehicle vehicle);
+        ParkingSpot? FindParkingSpot(IVehicle vehicle);
     }
 
     public class ParkingManager : IParkingManager
@@ -38,31 +38,31 @@ namespace IntrepidProducts.ParkingLot
         private readonly List<OccupiedSession> _activeSessions
             = new List<OccupiedSession>();
 
-        private readonly List<OccupiedSession> _inactiveSessions
+        private readonly List<OccupiedSession> _inactiveSessions  //TODO: Use it or lost it
             = new List<OccupiedSession>();
 
         public int TotalNbrOfSpots => _facility.All.Count;
         public int TotalNbrOfAvailableSpots => TotalNbrOfSpots - _activeSessions.Count;
         public bool IsFull => !(_activeSessions.Count < TotalNbrOfSpots);
 
-        public ParkingSpot FindParkingSpot(IVehicle vehicle)
+        public ParkingSpot? FindParkingSpot(IVehicle vehicle)
         {
             var session = _activeSessions
-                .FirstOrDefault(x => x.Vehicle.Equals(vehicle));
+                .FirstOrDefault(x => x.Vehicle != null && x.Vehicle.Equals(vehicle));
 
             return session?.ParkingSpot;
         }
 
-        public ParkingSpot AvailableSpot()
+        public ParkingSpot? AvailableSpot()
         {
             var activeParkingSpots =
                 _activeSessions
                     .Where(x => x.ParkingSpot != null)
                     .Select(x => x.ParkingSpot);
 
-            var x = _facility.All.Except(activeParkingSpots);
+            var parkingSpots = activeParkingSpots.ToList();
 
-            return _facility.All.Except(activeParkingSpots).FirstOrDefault();
+            return _facility.All.Except(parkingSpots).FirstOrDefault();
         }
 
         public bool IsAvailable([NotNull] ParkingSpot spot)
@@ -76,7 +76,7 @@ namespace IntrepidProducts.ParkingLot
 
             var isActive = _activeSessions
                 .Where(x => x.ParkingSpot != null)
-                .Any(x => x.ParkingSpot.Equals(spot));
+                .Any(x => x.ParkingSpot != null && x.ParkingSpot.Equals(spot));
 
             return !isActive;
         }
@@ -108,7 +108,8 @@ namespace IntrepidProducts.ParkingLot
 
         private OccupiedSession FindActiveSession(IVehicle vehicle) =>
             _activeSessions
-                .FirstOrDefault(x => x.Vehicle.Equals(vehicle));
+                .FirstOrDefault(x => 
+                    x.Vehicle != null && x.Vehicle.Equals(vehicle));
 
         public bool Exit(IVehicle vehicle, DateTime? dateTime = null)
         {
